@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Siswa</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        .hidden { display: none !important; }
+        
+        .action-links a, .action-links button {
+            background: transparent;
+            border: none;
+            color: var(--accent-cyan, #00d4ff);
+            cursor: pointer;
+            font-size: 0.95rem;
+            text-decoration: underline;
+            padding: 0 4px;
+            width: auto;
+            box-shadow: none;
+        }
+
+        .action-links button.btn-danger {
+            color: #ff4d4d;
+        }
+
+        .action-links a:hover, .action-links button:hover {
+            color: #ffffff;
+            background: transparent;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .top-bar a, .top-bar button {
+            width: auto;
+            display: inline-block;
+        }
+
+        .btn-logout-top {
+            background: linear-gradient(135deg, #d62828, #f77f00);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 1. HALAMAN LOGIN -->
+<div id="page-login">
+    <div style="max-width: 500px; padding: 30px; margin: 40px auto; background: var(--glass-bg, rgba(10, 35, 60, 0.65)); backdrop-filter: blur(12px); border: 1px solid var(--glass-border, rgba(0, 212, 255, 0.25)); border-radius: 12px; position: relative; z-index: 1;">
+        <h2>Login Admin</h2>
+        <label>Username</label>
+        <input type="text" id="login-username" placeholder="Masukkan username (admin)">
+
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Masukkan password (admin123)">
+
+        <button type="button" onclick="prosesLogin()">Login</button>
+    </div>
+</div>
+
+<!-- 2. HALAMAN DASHBOARD -->
+<div id="page-dashboard" class="container hidden">
+    <div class="top-bar">
+        <h2>Dashboard Data Siswa</h2>
+        <button type="button" class="btn-logout-top" onclick="prosesLogout()">Logout</button>
+    </div>
+
+    <p>Total Siswa : <strong id="total-siswa">0</strong></p>
+    <button type="button" onclick="showPage('page-tambah')" style="width: auto; margin-bottom: 20px;">+ Tambah Siswa</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>NIS</th>
+                <th>Nama</th>
+                <th>Jurusan</th>
+                <th>Alamat</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="tabel-siswa-body">
+            <!-- Data dimasukkan lewat JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<!-- 3. HALAMAN TAMBAH SISWA -->
+<div id="page-tambah" class="hidden">
+    <div style="max-width: 500px; padding: 30px; margin: 20px auto; background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 12px; position: relative; z-index: 1;">
+        <h2>Tambah Data Siswa</h2>
+
+        <label>NIS</label>
+        <input type="text" id="add-nis" placeholder="Masukkan NIS">
+
+        <label>Nama</label>
+        <input type="text" id="add-nama" placeholder="Masukkan Nama Lengkap">
+
+        <label>Jurusan</label>
+        <input type="text" id="add-jurusan" placeholder="Masukkan Jurusan (misal: RPL)">
+
+        <label>Alamat</label>
+        <textarea id="add-alamat" placeholder="Masukkan Alamat"></textarea>
+
+        <button type="button" onclick="simpanSiswa()">Simpan</button>
+        <br><br>
+        <a href="#" onclick="showPage('page-dashboard'); return false;">← Kembali ke Dashboard</a>
+    </div>
+</div>
+
+<!-- 4. HALAMAN EDIT SISWA -->
+<div id="page-edit" class="hidden">
+    <div style="max-width: 500px; padding: 30px; margin: 20px auto; background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 12px; position: relative; z-index: 1;">
+        <h2>Edit Data Siswa</h2>
+        <input type="hidden" id="edit-id">
+
+        <label>NIS</label>
+        <input type="text" id="edit-nis">
+
+        <label>Nama</label>
+        <input type="text" id="edit-nama">
+
+        <label>Jurusan</label>
+        <input type="text" id="edit-jurusan">
+
+        <label>Alamat</label>
+        <textarea id="edit-alamat"></textarea>
+
+        <button type="button" onclick="updateSiswa()">Update Data</button>
+        <br><br>
+        <a href="#" onclick="showPage('page-dashboard'); return false;">← Batal / Kembali</a>
+    </div>
+</div>
+
+<!-- Background Aquatic Animations -->
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+
+<script>
+    // Data Dummy Awal
+    const defaultData = [
+        { id: 1, nis: "1001", nama: "Budi Santoso", jurusan: "RPL", alamat: "Jakarta" },
+        { id: 2, nis: "1002", nama: "Siti Aminah", jurusan: "TKJ 1", alamat: "Bandung" }
+    ];
+
+    // Mengambil data dari localStorage
+    function getSiswaData() {
+        const data = localStorage.getItem('db_siswa');
+        if (!data) {
+            localStorage.setItem('db_siswa', JSON.stringify(defaultData));
+            return defaultData;
+        }
+        return JSON.parse(data);
+    }
+
+    function saveSiswaData(data) {
+        localStorage.setItem('db_siswa', JSON.stringify(data));
+    }
+
+    // Navigasi Halaman
+    function showPage(pageId) {
+        document.getElementById('page-login').classList.add('hidden');
+        document.getElementById('page-dashboard').classList.add('hidden');
+        document.getElementById('page-tambah').classList.add('hidden');
+        document.getElementById('page-edit').classList.add('hidden');
+
+        document.getElementById(pageId).classList.remove('hidden');
+
+        if (pageId === 'page-dashboard') {
+            renderTable();
+        }
+    }
+
+    // 1. Fungsi Login
+    function prosesLogin() {
+        const user = document.getElementById('login-username').value;
+        const pass = document.getElementById('login-password').value;
+
+        if (user === "admin" && pass === "admin123") {
+            sessionStorage.setItem('isLoggedIn', 'true');
+            showPage('page-dashboard');
+        } else {
+            alert("Username atau Password salah! (Gunakan: admin / admin123)");
+        }
+    }
+
+    function prosesLogout() {
+        sessionStorage.removeItem('isLoggedIn');
+        showPage('page-login');
+    }
+
+    // 2. Render Tabel Dashboard
+    function renderTable() {
+        const data = getSiswaData();
+        const tbody = document.getElementById('tabel-siswa-body');
+        document.getElementById('total-siswa').innerText = data.length;
+        tbody.innerHTML = '';
+
+        data.forEach((item, index) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.nis}</td>
+                    <td>${item.nama}</td>
+                    <td>${item.jurusan}</td>
+                    <td>${item.alamat}</td>
+                    <td class="action-links">
+                        <button type="button" onclick="editSiswa(${item.id})">Edit</button> | 
+                        <button type="button" class="btn-danger" onclick="hapusSiswa(${item.id})">Hapus</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // 3. Tambah Siswa
+    function simpanSiswa() {
+        const nis = document.getElementById('add-nis').value;
+        const nama = document.getElementById('add-nama').value;
+        const jurusan = document.getElementById('add-jurusan').value;
+        const alamat = document.getElementById('add-alamat').value;
+
+        if (!nis || !nama) {
+            alert("NIS dan Nama wajib diisi!");
+            return;
+        }
+
+        const data = getSiswaData();
+        const newId = Date.now();
+        data.push({ id: newId, nis, nama, jurusan, alamat });
+        saveSiswaData(data);
+
+        // Reset Form
+        document.getElementById('add-nis').value = '';
+        document.getElementById('add-nama').value = '';
+        document.getElementById('add-jurusan').value = '';
+        document.getElementById('add-alamat').value = '';
+
+        alert("Data berhasil ditambahkan!");
+        showPage('page-dashboard');
+    }
+
+    // 4. Edit Siswa
+    function editSiswa(id) {
+        const data = getSiswaData();
+        const siswa = data.find(s => s.id === id);
+
+        if (siswa) {
+            document.getElementById('edit-id').value = siswa.id;
+            document.getElementById('edit-nis').value = siswa.nis;
+            document.getElementById('edit-nama').value = siswa.nama;
+            document.getElementById('edit-jurusan').value = siswa.jurusan;
+            document.getElementById('edit-alamat').value = siswa.alamat;
+            showPage('page-edit');
+        }
+    }
+
+    function updateSiswa() {
+        const id = Number(document.getElementById('edit-id').value);
+        let data = getSiswaData();
+
+        data = data.map(siswa => {
+            if (siswa.id === id) {
+                return {
+                    id: id,
+                    nis: document.getElementById('edit-nis').value,
+                    nama: document.getElementById('edit-nama').value,
+                    jurusan: document.getElementById('edit-jurusan').value,
+                    alamat: document.getElementById('edit-alamat').value
+                };
+            }
+            return siswa;
+        });
+
+        saveSiswaData(data);
+        alert("Data berhasil diperbarui!");
+        showPage('page-dashboard');
+    }
+
+    // 5. Hapus Siswa
+    function hapusSiswa(id) {
+        if (confirm("Apakah Anda yakin ingin menghapus data siswa ini?")) {
+            let data = getSiswaData();
+            data = data.filter(siswa => siswa.id !== id);
+            saveSiswaData(data);
+            renderTable();
+        }
+    }
+
+    // Cek Sesi Login Awal
+    window.onload = function() {
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            showPage('page-dashboard');
+        } else {
+            showPage('page-login');
+        }
+    };
+</script>
+
+</body>
+</html>
