@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <style>
         .hidden { display: none !important; }
-        
+
         .action-links a, .action-links button {
             background: transparent;
             border: none;
@@ -50,15 +50,183 @@
             border-radius: 6px;
             text-decoration: none;
             font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Stylings khusus untuk dropdown select agar sesuai tema Aquatic (dari tambah.php) */
+        select[name="jurusan"] {
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 15px;
+            background: rgba(4, 20, 36, 0.8);
+            border: 1px solid var(--glass-border, rgba(0, 212, 255, 0.25));
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        select[name="jurusan"]:focus {
+            border-color: var(--accent-cyan, #00d4ff);
+            box-shadow: 0 0 10px var(--glow-color, rgba(0, 212, 255, 0.4));
+        }
+
+        select[name="jurusan"] option {
+            background-color: #051d33;
+            color: #ffffff;
+            padding: 8px;
+        }
+
+        /* Modal (dari hapus.php & logout.php) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-box {
+            max-width: 420px;
+            width: 90%;
+            padding: 30px;
+            text-align: center;
+            background: var(--glass-bg, rgba(10, 35, 60, 0.85));
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--glass-border, rgba(0, 212, 255, 0.3));
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5),
+                        0 0 20px rgba(214, 40, 40, 0.2);
+            position: relative;
+            z-index: 101;
+        }
+
+        .modal-box.modal-logout {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5),
+                        0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .modal-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .modal-box h3 {
+            color: #ffffff;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(214, 40, 40, 0.5);
+        }
+
+        .modal-box.modal-logout h3 {
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .modal-box p {
+            font-size: 0.95rem;
+            color: #e0f7fc;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .student-info {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #d62828, #f77f00);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(214, 40, 40, 0.3);
+            width: 100%;
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #e63946, #ffb703);
+            box-shadow: 0 0 15px rgba(214, 40, 40, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #0077b6, #00b4d8);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+            width: 100%;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #0096c7, #48cae4);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0f7fc;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(0, 212, 255, 0.2);
+            color: #ffffff;
+            border-color: #00d4ff;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
 
-<!-- 1. HALAMAN LOGIN -->
+<!-- 1. HALAMAN LOGIN (login.php + proses_login.php) -->
 <div id="page-login">
     <div style="max-width: 500px; padding: 30px; margin: 40px auto; background: var(--glass-bg, rgba(10, 35, 60, 0.65)); backdrop-filter: blur(12px); border: 1px solid var(--glass-border, rgba(0, 212, 255, 0.25)); border-radius: 12px; position: relative; z-index: 1;">
         <h2>Login Admin</h2>
+        <p id="login-error" class="hidden" style="color:#ff6b6b; margin-top:-8px; margin-bottom:15px;">Username atau Password salah</p>
+
         <label>Username</label>
         <input type="text" id="login-username" placeholder="Masukkan username (admin)">
 
@@ -69,15 +237,15 @@
     </div>
 </div>
 
-<!-- 2. HALAMAN DASHBOARD -->
+<!-- 2. HALAMAN DASHBOARD (dashboard.php) -->
 <div id="page-dashboard" class="container hidden">
     <div class="top-bar">
-        <h2>Dashboard Data Siswa</h2>
-        <button type="button" class="btn-logout-top" onclick="prosesLogout()">Logout</button>
+        <h2>Dashboard</h2>
+        <button type="button" class="btn-logout-top" onclick="showLogoutModal()">Logout</button>
     </div>
 
     <p>Total Siswa : <strong id="total-siswa">0</strong></p>
-    <button type="button" onclick="showPage('page-tambah')" style="width: auto; margin-bottom: 20px;">+ Tambah Siswa</button>
+    <button type="button" onclick="showPage('page-tambah')" style="width: auto; margin-bottom: 20px;">Tambah Siswa</button>
 
     <table>
         <thead>
@@ -96,30 +264,41 @@
     </table>
 </div>
 
-<!-- 3. HALAMAN TAMBAH SISWA -->
+<!-- 3. HALAMAN TAMBAH SISWA (tambah.php + simpan.php) -->
 <div id="page-tambah" class="hidden">
     <div style="max-width: 500px; padding: 30px; margin: 20px auto; background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 12px; position: relative; z-index: 1;">
         <h2>Tambah Data Siswa</h2>
 
         <label>NIS</label>
-        <input type="text" id="add-nis" placeholder="Masukkan NIS">
+        <input type="text" id="add-nis" required>
 
         <label>Nama</label>
-        <input type="text" id="add-nama" placeholder="Masukkan Nama Lengkap">
+        <input type="text" id="add-nama" required>
 
         <label>Jurusan</label>
-        <input type="text" id="add-jurusan" placeholder="Masukkan Jurusan (misal: RPL)">
+        <select name="jurusan" id="add-jurusan" required>
+            <option value="" disabled selected>-- Pilih Jurusan --</option>
+            <option value="RPL">RPL</option>
+            <option value="TKJ 1">TKJ 1</option>
+            <option value="TKJ 2">TKJ 2</option>
+            <option value="BR 1">BR 1</option>
+            <option value="BR 2">BR 2</option>
+            <option value="AK 1">AK 1</option>
+            <option value="AK 2">AK 2</option>
+            <option value="MP 1">MP 1</option>
+            <option value="MP 2">MP 2</option>
+        </select>
 
         <label>Alamat</label>
-        <textarea id="add-alamat" placeholder="Masukkan Alamat"></textarea>
+        <textarea id="add-alamat" required></textarea>
 
-        <button type="button" onclick="simpanSiswa()">Simpan</button>
+        <button type="submit" onclick="simpanSiswa()">Simpan</button>
         <br><br>
         <a href="#" onclick="showPage('page-dashboard'); return false;">← Kembali ke Dashboard</a>
     </div>
 </div>
 
-<!-- 4. HALAMAN EDIT SISWA -->
+<!-- 4. HALAMAN EDIT SISWA (edit.php + update.php) -->
 <div id="page-edit" class="hidden">
     <div style="max-width: 500px; padding: 30px; margin: 20px auto; background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 12px; position: relative; z-index: 1;">
         <h2>Edit Data Siswa</h2>
@@ -132,14 +311,54 @@
         <input type="text" id="edit-nama">
 
         <label>Jurusan</label>
-        <input type="text" id="edit-jurusan">
+        <select name="jurusan" id="edit-jurusan">
+            <option value="RPL">RPL</option>
+            <option value="TKJ 1">TKJ 1</option>
+            <option value="TKJ 2">TKJ 2</option>
+            <option value="BR 1">BR 1</option>
+            <option value="BR 2">BR 2</option>
+            <option value="AK 1">AK 1</option>
+            <option value="AK 2">AK 2</option>
+            <option value="MP 1">MP 1</option>
+            <option value="MP 2">MP 2</option>
+        </select>
 
         <label>Alamat</label>
         <textarea id="edit-alamat"></textarea>
 
-        <button type="button" onclick="updateSiswa()">Update Data</button>
+        <button type="submit" onclick="updateSiswa()">Update</button>
         <br><br>
         <a href="#" onclick="showPage('page-dashboard'); return false;">← Batal / Kembali</a>
+    </div>
+</div>
+
+<!-- 5. MODAL KONFIRMASI HAPUS (hapus.php) -->
+<div id="modal-hapus" class="modal-overlay hidden">
+    <div class="modal-box">
+        <div class="modal-icon">⚠️</div>
+        <h3>Konfirmasi Hapus</h3>
+        <p>Apakah Anda yakin ingin menghapus data siswa ini?</p>
+
+        <div class="student-info" id="hapus-student-info"></div>
+
+        <div class="button-group">
+            <button type="button" class="btn-delete" onclick="confirmHapus()">Ya, Hapus</button>
+            <button type="button" class="btn-cancel" onclick="closeHapusModal()">Batal</button>
+        </div>
+    </div>
+</div>
+
+<!-- 6. MODAL KONFIRMASI LOGOUT (logout.php) -->
+<div id="modal-logout" class="modal-overlay hidden">
+    <div class="modal-box modal-logout">
+        <div class="modal-icon">🚪</div>
+        <h3>Konfirmasi Logout</h3>
+        <p>Apakah Anda yakin ingin keluar dari sistem?</p>
+
+        <div class="button-group">
+            <button type="button" class="btn-logout" onclick="confirmLogout()">Ya, Logout</button>
+            <button type="button" class="btn-cancel" onclick="closeLogoutModal()">Batal</button>
+        </div>
     </div>
 </div>
 
@@ -151,13 +370,12 @@
 <div class="bubble"></div>
 
 <script>
-    // Data Dummy Awal
+    // ================== "koneksi.php" pengganti: localStorage sebagai basis data ==================
     const defaultData = [
         { id: 1, nis: "1001", nama: "Budi Santoso", jurusan: "RPL", alamat: "Jakarta" },
         { id: 2, nis: "1002", nama: "Siti Aminah", jurusan: "TKJ 1", alamat: "Bandung" }
     ];
 
-    // Mengambil data dari localStorage
     function getSiswaData() {
         const data = localStorage.getItem('db_siswa');
         if (!data) {
@@ -171,7 +389,9 @@
         localStorage.setItem('db_siswa', JSON.stringify(data));
     }
 
-    // Navigasi Halaman
+    let idToDelete = null;
+
+    // ================== Navigasi Halaman ==================
     function showPage(pageId) {
         document.getElementById('page-login').classList.add('hidden');
         document.getElementById('page-dashboard').classList.add('hidden');
@@ -185,25 +405,39 @@
         }
     }
 
-    // 1. Fungsi Login
+    // ================== 1. Login (proses_login.php) ==================
     function prosesLogin() {
         const user = document.getElementById('login-username').value;
         const pass = document.getElementById('login-password').value;
+        const errorMsg = document.getElementById('login-error');
 
         if (user === "admin" && pass === "admin123") {
             sessionStorage.setItem('isLoggedIn', 'true');
+            errorMsg.classList.add('hidden');
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
             showPage('page-dashboard');
         } else {
-            alert("Username atau Password salah! (Gunakan: admin / admin123)");
+            errorMsg.classList.remove('hidden');
         }
     }
 
-    function prosesLogout() {
+    // ================== Logout (logout.php) ==================
+    function showLogoutModal() {
+        document.getElementById('modal-logout').classList.remove('hidden');
+    }
+
+    function closeLogoutModal() {
+        document.getElementById('modal-logout').classList.add('hidden');
+    }
+
+    function confirmLogout() {
         sessionStorage.removeItem('isLoggedIn');
+        closeLogoutModal();
         showPage('page-login');
     }
 
-    // 2. Render Tabel Dashboard
+    // ================== 2. Render Tabel Dashboard (dashboard.php) ==================
     function renderTable() {
         const data = getSiswaData();
         const tbody = document.getElementById('tabel-siswa-body');
@@ -219,23 +453,23 @@
                     <td>${item.jurusan}</td>
                     <td>${item.alamat}</td>
                     <td class="action-links">
-                        <button type="button" onclick="editSiswa(${item.id})">Edit</button> | 
-                        <button type="button" class="btn-danger" onclick="hapusSiswa(${item.id})">Hapus</button>
+                        <a href="#" onclick="editSiswa(${item.id}); return false;">Edit</a> |
+                        <a href="#" onclick="hapusSiswa(${item.id}); return false;">Hapus</a>
                     </td>
                 </tr>
             `;
         });
     }
 
-    // 3. Tambah Siswa
+    // ================== 3. Tambah Siswa (tambah.php + simpan.php) ==================
     function simpanSiswa() {
         const nis = document.getElementById('add-nis').value;
         const nama = document.getElementById('add-nama').value;
         const jurusan = document.getElementById('add-jurusan').value;
         const alamat = document.getElementById('add-alamat').value;
 
-        if (!nis || !nama) {
-            alert("NIS dan Nama wajib diisi!");
+        if (!nis || !nama || !jurusan || !alamat) {
+            alert("Semua field wajib diisi!");
             return;
         }
 
@@ -250,11 +484,10 @@
         document.getElementById('add-jurusan').value = '';
         document.getElementById('add-alamat').value = '';
 
-        alert("Data berhasil ditambahkan!");
         showPage('page-dashboard');
     }
 
-    // 4. Edit Siswa
+    // ================== 4. Edit Siswa (edit.php + update.php) ==================
     function editSiswa(id) {
         const data = getSiswaData();
         const siswa = data.find(s => s.id === id);
@@ -287,21 +520,35 @@
         });
 
         saveSiswaData(data);
-        alert("Data berhasil diperbarui!");
         showPage('page-dashboard');
     }
 
-    // 5. Hapus Siswa
+    // ================== 5. Hapus Siswa (hapus.php) ==================
     function hapusSiswa(id) {
-        if (confirm("Apakah Anda yakin ingin menghapus data siswa ini?")) {
-            let data = getSiswaData();
-            data = data.filter(siswa => siswa.id !== id);
-            saveSiswaData(data);
-            renderTable();
-        }
+        const data = getSiswaData();
+        const siswa = data.find(s => s.id === id);
+        if (!siswa) return;
+
+        idToDelete = id;
+        document.getElementById('hapus-student-info').innerText = siswa.nis + ' - ' + siswa.nama;
+        document.getElementById('modal-hapus').classList.remove('hidden');
     }
 
-    // Cek Sesi Login Awal
+    function closeHapusModal() {
+        idToDelete = null;
+        document.getElementById('modal-hapus').classList.add('hidden');
+    }
+
+    function confirmHapus() {
+        if (idToDelete === null) return;
+        let data = getSiswaData();
+        data = data.filter(siswa => siswa.id !== idToDelete);
+        saveSiswaData(data);
+        closeHapusModal();
+        renderTable();
+    }
+
+    // ================== Cek Sesi Login Awal (session_start check) ==================
     window.onload = function() {
         if (sessionStorage.getItem('isLoggedIn') === 'true') {
             showPage('page-dashboard');
